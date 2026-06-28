@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxe Bean — Artisanal Coffee Collection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #fff8f6;
+      --surface: #ffffff;
+      --surface-low: #faf2f0;
+      --primary: #271310;
+      --primary-cont: #3e2723;
+      --on-primary: #ffffff;
+      --tertiary: #ba8b5d;
+      --outline: #827472;
+      --outline-var: #d3c3c0;
+      --on-surface: #1e1b1a;
+      --on-variant: #504442;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+      --shadow: 0 4px 20px rgba(62, 39, 35, 0.06);
+      --shadow-hover: 0 8px 32px rgba(62, 39, 35, 0.12);
+      --radius: 4px;
+      --radius-pill: 9999px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--on-surface);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--outline-var);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .nav-logo {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--on-variant);
+      text-decoration: none;
+      transition: color 200ms ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-cart {
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      color: var(--on-surface);
+      padding: 4px;
+    }
+
+    .nav-cart svg {
+      display: block;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: var(--primary-cont);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--on-surface);
+      padding: 4px;
+    }
+
+    /* ─── MOBILE DRAWER ───────────────────────────────── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(39, 19, 16, 0.4);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 300ms ease;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--bg);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 24px rgba(39, 19, 16, 0.12);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 60px;
+      border-bottom: 1px solid var(--outline-var);
+    }
+
+    .drawer-logo {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--on-variant);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color 200ms ease;
+    }
+
+    .drawer-close:hover {
+      color: var(--primary);
+    }
+
+    .drawer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0;
+    }
+
+    .drawer-links li a {
+      display: block;
+      padding: 16px 24px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--on-variant);
+      text-decoration: none;
+      border-bottom: 1px solid var(--outline-var);
+      transition: color 200ms ease, background 200ms ease;
+    }
+
+    .drawer-links li:first-child a {
+      border-top: 1px solid var(--outline-var);
+    }
+
+    .drawer-links li a:hover {
+      color: var(--primary);
+      background: var(--surface-low);
+    }
+
+    /* ─── HERO / HEADER ───────────────────────────────── */
+    .collection-header {
+      text-align: center;
+      padding: 64px 24px 40px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .collection-header h1 {
+      font-family: var(--serif);
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .collection-header p {
+      font-size: 18px;
+      color: var(--on-variant);
+      line-height: 1.6;
+    }
+
+    /* ─── FILTER CHIPS ────────────────────────────────── */
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 0 24px 40px;
+    }
+
+    .chip {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--outline-var);
+      background: transparent;
+      color: var(--on-variant);
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .chip:hover {
+      border-color: var(--outline);
+      color: var(--on-surface);
+    }
+
+    .chip.active {
+      background: var(--primary-cont);
+      border-color: var(--primary-cont);
+      color: #fff;
+    }
+
+    /* ─── GRID ────────────────────────────────────────── */
+    .catalog {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    /* ─── CARD ────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--outline-var);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: var(--outline);
+      transform: translateY(-2px);
+    }
+
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--surface-low);
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 400ms ease;
+      display: block;
+    }
+
+    .card:hover .card-img-wrap img {
+      transform: scale(1.04);
+    }
+
+    .badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: var(--radius);
+      background: var(--primary-cont);
+      color: #fff;
+    }
+
+    .badge.bestseller {
+      background: var(--tertiary);
+      color: #fff;
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .card-roast {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+    }
+
+    .card-name {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--primary);
+    }
+
+    .card-price {
+      font-size: 15px;
+      color: var(--on-variant);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .card-footer {
+      padding: 0 20px 20px;
+    }
+
+    .btn-cart {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--primary-cont);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 200ms ease, transform 150ms ease;
+    }
+
+    .btn-cart:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-cart:active {
+      transform: translateY(0);
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────── */
+    footer {
+      background: var(--primary);
+      color: rgba(255, 255, 255, 0.6);
+      padding: 48px 24px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .footer-brand .logo {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #fff;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand p {
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 240px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-col a {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      transition: color 200ms ease;
+    }
+
+    .footer-col a:hover {
+      color: #fff;
+    }
+
+    .footer-divider {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 32px 0 0;
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .catalog {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .collection-header h1 {
+        font-size: 32px;
+      }
+
+      .catalog {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 0 16px 64px;
+      }
+
+      .card-name {
+        font-size: 16px;
+      }
+
+      .card-body {
+        padding: 14px 14px 8px;
+      }
+
+      .card-footer {
+        padding: 0 14px 14px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* ─── TOAST ───────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--primary-cont);
+      color: #fff;
+      font-size: 13px;
+      font-family: var(--sans);
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 300ms ease, opacity 300ms ease;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MOBILE DRAWER OVERLAY -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <!-- MOBILE DRAWER -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <span class="drawer-logo">Luxe Bean</span>
+      <button class="drawer-close" id="drawerClose" aria-label="Close menu">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer-links">
+      <li><a href="#">Shop</a></li>
+      <li><a href="#">Our Story</a></li>
+      <li><a href="#">Brewing</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </aside>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Luxe Bean</a>
+    <ul class="nav-links">
+      <li><a href="#">Shop</a></li>
+      <li><a href="#">Our Story</a></li>
+      <li><a href="#">Brewing</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="nav-cart" aria-label="Cart" id="cartBtn">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" />
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- COLLECTION HEADER -->
+  <header class="collection-header">
+    <h1>Artisanal Coffee Collection</h1>
+    <p>Carefully selected, small-batch roasted beans from the world's most distinguished estates. A ritual of quality in
+      every cup.</p>
+  </header>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="chip active" data-filter="all">All</button>
+    <button class="chip" data-filter="single-origin">Single Origin</button>
+    <button class="chip" data-filter="blends">Blends</button>
+    <button class="chip" data-filter="decaf">Decaf</button>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <main class="catalog" id="catalog">
+
+    <article class="card" data-category="single-origin">
+      <div class="card-img-wrap">
+        <span class="badge">New Arrival</span>
+        <img src="./public/1.png" alt="Ethiopia Yirgacheffe" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Light Roast</span>
+        <h2 class="card-name">Ethiopia Yirgacheffe</h2>
+        <p class="card-price">$24.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Ethiopia Yirgacheffe')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="single-origin">
+      <div class="card-img-wrap">
+        <img src="./public/2.png" alt="Guatemala Antigua" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Medium Roast</span>
+        <h2 class="card-name">Guatemala Antigua</h2>
+        <p class="card-price">$22.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Guatemala Antigua')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="single-origin">
+      <div class="card-img-wrap">
+        <img src="./public/3.png" alt="Sumatra Mandheling" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Dark Roast</span>
+        <h2 class="card-name">Sumatra Mandheling</h2>
+        <p class="card-price">$25.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Sumatra Mandheling')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="blends">
+      <div class="card-img-wrap">
+        <span class="badge bestseller">Bestseller</span>
+        <img src="./public/4.png" alt="House Blend" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Medium-Dark</span>
+        <h2 class="card-name">House Blend</h2>
+        <p class="card-price">$19.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'House Blend')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="single-origin">
+      <div class="card-img-wrap">
+        <img src="./public/5.png" alt="Colombia Excelso" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Medium Roast</span>
+        <h2 class="card-name">Colombia Excelso</h2>
+        <p class="card-price">$21.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Colombia Excelso')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="blends">
+      <div class="card-img-wrap">
+        <img src="./public/6.png" alt="Midnight Roast" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Extra Dark</span>
+        <h2 class="card-name">Midnight Roast</h2>
+        <p class="card-price">$26.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Midnight Roast')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="single-origin">
+      <div class="card-img-wrap">
+        <img src="./public/1.png" alt="Kenya AA" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Light-Medium</span>
+        <h2 class="card-name">Kenya AA</h2>
+        <p class="card-price">$28.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Kenya AA')">Add to Cart</button>
+      </div>
+    </article>
+
+    <article class="card" data-category="decaf">
+      <div class="card-img-wrap">
+        <img src="./public/2.png" alt="Swiss Water Decaf" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <span class="card-roast">Decaf · Medium</span>
+        <h2 class="card-name">Swiss Water Decaf</h2>
+        <p class="card-price">$23.00</p>
+      </div>
+      <div class="card-footer">
+        <button class="btn-cart" onclick="addToCart(this, 'Swiss Water Decaf')">Add to Cart</button>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo">Luxe Bean</span>
+        <p>© 2024 Luxe Bean Roastery. Artisanal quality. Grounded in ritual, roasted for the discerning few.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">Sourcing</a></li>
+          <li><a href="#">Brewing Guides</a></li>
+          <li><a href="#">Subscriptions</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">Wholesale</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Social</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+          <li><a href="#">Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Mobile drawer ─────────────────────────────────
+    const hamburgerBtn = document.getElementById('hamburgerBtn')
+    const drawerEl = document.getElementById('drawer')
+    const overlayEl = document.getElementById('drawerOverlay')
+    const drawerClose = document.getElementById('drawerClose')
+
+    function openDrawer() {
+      drawerEl.classList.add('open')
+      overlayEl.classList.add('open')
+      drawerEl.setAttribute('aria-hidden', 'false')
+      document.body.style.overflow = 'hidden'
+    }
+    function closeDrawer() {
+      drawerEl.classList.remove('open')
+      overlayEl.classList.remove('open')
+      drawerEl.setAttribute('aria-hidden', 'true')
+      document.body.style.overflow = ''
+    }
+    hamburgerBtn.addEventListener('click', openDrawer)
+    drawerClose.addEventListener('click', closeDrawer)
+    overlayEl.addEventListener('click', closeDrawer)
+
+    // ── Filter chips ──────────────────────────────────
+    const chips = document.querySelectorAll('.chip')
+    const cards = document.querySelectorAll('.card')
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'))
+        chip.classList.add('active')
+        const filter = chip.dataset.filter
+        cards.forEach(card => {
+          const match = filter === 'all' || card.dataset.category === filter
+          card.style.display = match ? '' : 'none'
+        })
+      })
+    })
+
+    // ── Add to cart ───────────────────────────────────
+    let cartTotal = 0
+    const countEl = document.getElementById('cartCount')
+    const toastEl = document.getElementById('toast')
+    let toastTimer
+
+    function addToCart(btn, name) {
+      cartTotal++
+      countEl.textContent = cartTotal
+
+      clearTimeout(toastTimer)
+      toastEl.textContent = `${name} added to cart`
+      toastEl.classList.add('show')
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400)
+    }
+  </script>
+</body>
+
+</html>
